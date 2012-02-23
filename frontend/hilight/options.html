@@ -1,0 +1,210 @@
+<html>
+    <head>
+        <title>Highlighter Annotator Options</title>
+        <script type="text/javascript" src="./jquery-1.5.1.min.js"> </script>
+        <script type="text/javascript">
+            $(document).ready( function() 
+            {
+                var $add_remove_friend_div = $('#add_remove_friend_div').hide();
+                var $block_unblock_user_div = $('#block_unblock_user_div').hide();
+                var $status_para = $('#status_para');
+                var $friends_para = $('#friends_para');
+                var $blocked_users_para = $('#blocked_users_para');
+                ( function()
+                  {
+                      var un = localStorage["hilan_un"];
+                      var pw = localStorage["hilan_pw"];
+                      if ( un && pw )
+                      {
+                          $('#sign_in_form :text').val(un);
+                          $('#sign_in_form :password').val(pw);
+                      }
+                  }
+                )();
+
+                $('#signin').click( function () 
+                {
+                    var form_data = $('#sign_in_form').serialize();
+                    $.ajax( {
+                        type: 'POST',
+                        dataType: 'json',
+                        data:form_data,
+                        url: 'http://hilight-annotate.appspot.com/signin',
+                        success: function(result)
+                        {
+                            $status_para.html(result.msg);
+                            if ( result.status == 0 )
+                            {
+                                $add_remove_friend_div.show();
+                                $block_unblock_user_div.show();
+                                $('#sign_in_div').hide();
+                                $friends_para.html("Friends : " + result.friends)
+                                $blocked_users_para.html("Blocked : " + result.blocked)
+                            }
+                        },
+                        error: function(xhr, status)
+                        {
+                            $status_para.html('There was a problem: '+ status);
+                        }
+                    });
+                });
+
+                $('#addfriend').click( function () 
+                {
+                    var form_data1 = $('#sign_in_form').serialize();
+                    var form_data2 = $('#add_remove_friend_form').serialize();
+                    var form_data = form_data1 + "&" + form_data2;
+                    $.ajax( {
+                        type: 'POST',
+                        dataType: 'json',
+                        data: form_data,
+                        url: 'http://hilight-annotate.appspot.com/addfriend',
+                        success: function(result)
+                        {
+                            $status_para.html(result.msg);
+                            if ( result.status == 0 )
+                            {
+                                $friends_para.html("Friends : " + result.friends)
+                            }
+                        },
+                        error: function(xhr, status)
+                        {
+                            $status_para.html('There was a problem: '+ status);
+                        }
+                    });
+                });
+
+                $('#removefriend').click( function () 
+                {
+                    var form_data1 = $('#sign_in_form').serialize();
+                    var form_data2 = $('#add_remove_friend_form').serialize();
+                    var form_data = form_data1 + "&" + form_data2;
+                    $.ajax( {
+                        type: 'POST',
+                        dataType: 'json',
+                        data: form_data,
+                        url: 'http://hilight-annotate.appspot.com/removefriend',
+                        success: function(result)
+                        {
+                            $status_para.html(result.msg);
+                            if ( result.status == 0 )
+                            {
+                                $friends_para.html("Friends : " + result.friends)
+                            }
+                        },
+                        error: function(xhr, status)
+                        {
+                            $status_para.html('There was a problem: '+ status);
+                        }
+                    });
+                });
+
+                $('#blockuser').click( function () 
+                {
+                    var form_data1 = $('#sign_in_form').serialize();
+                    var form_data2 = $('#block_unblock_user_form').serialize();
+                    var form_data = form_data1 + "&" + form_data2;
+                    $.ajax( {
+                        type: 'POST',
+                        dataType: 'json',
+                        data: form_data,
+                        url: 'http://hilight-annotate.appspot.com/blockuser',
+                        success: function(result)
+                        {
+                            $status_para.html(result.msg);
+                            if ( result.status == 0 )
+                            {
+                                $blocked_users_para.html("Blocked : " + result.blocked)
+                            }
+                        },
+                        error: function(xhr, status)
+                        {
+                            $status_para.html('There was a problem: '+ status);
+                        }
+                    });
+                });
+
+                $('#unblockuser').click( function () 
+                {
+                    var form_data1 = $('#sign_in_form').serialize();
+                    var form_data2 = $('#block_unblock_user_form').serialize();
+                    var form_data = form_data1 + "&" + form_data2;
+                    $.ajax( {
+                        type: 'POST',
+                        dataType: 'json',
+                        data: form_data,
+                        url: 'http://hilight-annotate.appspot.com/unblockuser',
+                        success: function(result)
+                        {
+                            $status_para.html(result.msg);
+                            if ( result.status == 0 )
+                            {
+                                $blocked_users_para.html("Blocked : " + result.blocked)
+                            }
+                        },
+                        error: function(xhr, status)
+                        {
+                            $status_para.html('There was a problem: '+ status);
+                        }
+                    });
+                });
+                
+                $('#save').click( function()
+                {
+                    var uname = $('#sign_in_form :text').val();
+                    var pw = $('#sign_in_form :password').val();
+                    if ( uname.length < 3 || pw.length < 3 )
+                    {
+                        $status_para.html('User name and password must each be more than 3 characters.');
+                        return;
+                    }
+                    localStorage["hilan_un"] = uname;
+                    localStorage["hilan_pw"] = pw;
+                });
+
+                $('fieldset :radio').change( function()
+                {
+                    localStorage["hilan_save_option"] = $(this).val();
+                });
+            });
+        </script>
+    </head>
+<body>
+    <h2>Hilighter Annotator Options</h2>
+    <div id="sign_in_div">
+        <p>Sign in to add a friend with whom you want to share your highlights and annotations. New user? Then, first, go <a href="http://hilight-annotate.appspot.com/signup">here</a>, register, and come back to this page to sign in. Click on the 'Save' button to save your user name and password locally.</p>
+        <form id="sign_in_form" method="post">
+            <p><label>User name:</label> <input type="text" name="hltr_name" /></p>
+            <p><label>Password:</label> <input type="password" name="pw" /></p>
+            <p>
+            <button type="button" id="save">Save User name and password</button>
+            <button type="button" id="signin">Sign-in</button>
+            </p>
+        </form>
+        <fieldset style="width: 200px;">
+            <legend>Save annotations</legend>
+            <input type="radio" name="saving" value="local" />Locally<br/>
+            <input type="radio" name="saving" value="web" />On the web
+        </fieldset>
+    </div>
+    <div id="add_remove_friend_div">
+    <h3>Add/remove a friend</h3>
+        <form id="add_remove_friend_form" method="post">
+            <p><label>Friend name:</label> <input type="text" name="friend_name" /></p>
+            <p><button type="button" id="addfriend">Add friend</button>
+               <button type="button" id="removefriend">Remove friend</button></p>
+        </form>
+    </div>
+    <div id="block_unblock_user_div">
+    <h3>Block/unblock an user</h3>
+        <form id="block_unblock_user_form" method="post">
+            <p><label>User name:</label> <input type="text" name="other_hltr_name" /></p>
+            <p><button type="button" id="blockuser">Block user</button>
+               <button type="button" id="unblockuser">Unblock user</button></p>
+        </form>
+    </div>
+    <p id="status_para" style="color: rgb(88,88,172);"></p>
+    <p id="friends_para"></p>
+    <p id="blocked_users_para"></p>
+</body>
+</html>

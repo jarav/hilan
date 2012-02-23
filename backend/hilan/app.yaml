@@ -1,0 +1,39 @@
+application: hilight-annotate
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /signup
+  script: signup.py
+
+- url: /signin
+  script: signin.py
+
+- url: /addfriend
+  script: signin.py
+
+- url: /removefriend
+  script: signin.py
+
+- url: /blockuser
+  script: signin.py
+
+- url: /unblockuser
+  script: signin.py
+
+- url: /saveann
+  script: get_save.py
+
+- url: /getanns
+  script: get_save.py
+
+- url: /delann
+  script: get_save.py
+
+- url: /delall
+  script: get_save.py
+
+- url: /favicon\.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon\.ico

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <title>Sign up</title>
+</head>
+<body>
+    {% if user_exists or un_too_small or pw_too_small or pwds_no_match %}
+        {% if user_exists %}
+            <p>Sorry, the user name {{ un }} is taken.</p>
+        {% else %}
+            {% if un_too_small %}
+                <p>The user name should be more than 3 characters long.</p>
+            {% endif %}
+            {% if pw_too_small %}
+                <p>The password should be more than 3 characters long.</p>
+            {% endif %}
+            {% if pwds_no_match %}
+                <p>The two passwords should match.</p>
+            {% endif %}
+        {% endif %}
+        <form action="/signup" method="get">
+            <p><input type="submit" value="Try again" /></p>
+        </form>
+    {% else %}
+        <p>Your user name, {{ un }}, has been added.</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,121 @@
+<html>
+<head>
+    <script type="text/javascript" src="./jquery-1.5.1.min.js"> </script>
+</head>
+<body>
+<script>
+    chrome.contextMenus.create({"title":"Highlight", "contexts" : ["selection"], "onclick" : hiLight});
+
+    chrome.contextMenus.create({"title":"Remove all highlights", "contexts" : ["page"], "onclick" : unhiLight});
+
+    function hiLight()
+    {
+        chrome.tabs.getSelected(null, function(tab) {
+            chrome.tabs.sendRequest(tab.id, {cmnd: "h"});
+              });
+    }
+
+    function unhiLight()
+    {
+        chrome.tabs.getSelected(null, function(tab) {
+            chrome.tabs.sendRequest(tab.id, {cmnd: "uh"});
+              });
+    }
+
+    function onRequest(request, sender, callback)
+    {
+        switch (request.cmnd)
+        {
+            case 'save_option' :
+                callback(localStorage["hilan_save_option"]);
+                break;
+            case 'creds' :
+                callback({un : localStorage["hilan_un"], pw : localStorage["hilan_pw"]});
+                break;
+            case 'save_ann' :
+                $.ajax( {
+                    type: 'POST',
+                    dataType: 'text',
+                    data: request.data,
+                    url: 'http://hilight-annotate.appspot.com/saveann',
+                    success : function(result)
+                    {
+                        var result = $.trim(result);
+                        if ( result == "0" )
+                            callback();
+                        else if ( result == "1" )
+                            alert("Hilan:\n" + "Wrong user name or password");
+                    },
+                    error: function(xhr, status)
+                    {
+                        alert("Hilan:\n" + status);
+                    }
+                });
+                break;
+            case 'get_anns' :
+                $.ajax( {
+                    type: 'POST',
+                    dataType: 'json',
+                    data: request.data,
+                    url: 'http://hilight-annotate.appspot.com/getanns',
+                    success : function(result)
+                    {
+                        if ( result.hltr_error )
+                            alert("Hilan:\n" + result.hltr_error);
+                        else
+                            callback(result);
+                    },
+                    error: function(xhr, status)
+                    {
+                        alert("Hilan:\n" + status);
+                    }
+                });
+                break;
+            case 'del_ann' :
+                $.ajax( {
+                    type: 'POST',
+                    dataType: 'text',
+                    data: request.data,
+                    url: 'http://hilight-annotate.appspot.com/delann',
+                    success : function(result)
+                    {
+                        var result = $.trim(result);
+                        if ( result == "0" )
+                            callback();
+                        else if ( result == "1" )
+                            alert("Hilan:\n" + "Wrong user name or password");
+                    },
+                    error: function(xhr, status)
+                    {
+                        alert("Hilan:\n" + status);
+                    }
+                });
+                break;
+            case 'del_all' :
+                $.ajax( {
+                    type: 'POST',
+                    dataType: 'text',
+                    data: request.data,
+                    url: 'http://hilight-annotate.appspot.com/delall',
+                    success : function(result)
+                    {
+                        var result = $.trim(result);
+                        if ( result == "0" )
+                            callback();
+                        else if ( result == "1" )
+                            alert("Hilan:\n" + "Wrong user name or password");
+                    },
+                    error: function(xhr, status)
+                    {
+                        alert("Hilan:\n" + status);
+                    }
+                });
+                break;
+        }
+    }
+
+    chrome.extension.onRequest.addListener(onRequest);
+
+</script>
+</body>
+</html>
